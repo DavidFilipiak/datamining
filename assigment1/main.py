@@ -31,3 +31,4 @@ def bestsplit(x,y):
 
 print(impurity(array))
 print(bestsplit(credit_data[:,3],credit_data[:,5]))
+print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0,0]))) #test for homework 1, question 2
