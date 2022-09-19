@@ -102,3 +102,7 @@ print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0
 
 tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
 tree.printTree()
+
+pima_data = np.genfromtxt('D:/UU/Data Mining/datamining/assigment1/pima_indians.txt', delimiter=',', skip_header=False)
+tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
+tree2.printTree()
