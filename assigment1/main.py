@@ -18,34 +18,47 @@ class DecisionTree:
         self.nodeList = []
         self.nodeList.append(self.root)
 
+        # iterate over every node in the node list (starting with root),
+        # the nodes to the list are being added as more splits happen
         while len(self.nodeList) > 0:
+
+            # take the first node of the node list
             node = self.nodeList.pop(0)
+
+            # only attempt to split if number of observations is more than 'nmin' and the node is not pure
             if len(node.labels) >= nmin and impurity(node.labels) > 0:
 
-                attrsIndexes = np.random.choice(np.arange(0, len(x[0])), size=nfeat, replace=False)
+                # get random attributes to try splitting on based on 'nfeat' (important for random forest & bagging)
+                attrs_indexes = np.random.choice(np.arange(0, len(x[0])), size=nfeat, replace=False)
 
                 split_attribute = 0
                 best_impurity_reduction = 0
                 best_split_value = 0
-                for i in attrsIndexes:
-                    splitpoint, impurity_reduction = bestsplit(node.attrs[:,i], node.labels)
+
+                # for every randomly selected attribute, determine which one provides the best split
+                for i in attrs_indexes:
+                    splitpoint, impurity_reduction = bestsplit(node.attrs[:, i], node.labels)
                     if impurity_reduction > best_impurity_reduction:
                         split_attribute = i
                         best_impurity_reduction = impurity_reduction
                         best_split_value = splitpoint
 
-                lower_split = node.attrs[node.attrs[:,split_attribute] <= best_split_value]
-                upper_split = node.attrs[node.attrs[:,split_attribute] > best_split_value]
+                # get indexes of values lower or equal AND greater than the best split attribute
+                indexes_lower = np.arange(0, len(node.attrs[:, split_attribute]))[node.attrs[:, split_attribute] <= best_split_value]
+                indexes_upper = np.delete(np.arange(0, len(node.attrs[:, split_attribute])), indexes_lower)
 
-                if len(lower_split) >= minleaf and len(upper_split) >= minleaf:
-                    left = self.Node(lower_split,node.labels[np.arange(0,len(node.labels))[node.attrs[:,split_attribute] <= best_split_value]])
-                    right = self.Node(upper_split,node.labels[np.arange(0,len(node.labels))[node.attrs[:,split_attribute] > best_split_value]])
+                # only continue if both branches of the best split have more observations than 'minleaf'
+                if len(indexes_lower) >= minleaf and len(indexes_upper) >= minleaf:
+
+                    # create a new child nodes to the current node, and add both to the node list
+                    left = self.Node(node.attrs[indexes_lower], node.labels[indexes_lower])
+                    right = self.Node(node.attrs[indexes_upper], node.labels[indexes_upper])
                     node.left, node.right = left, right
                     node.split_attr_index, node.split_value = split_attribute, best_split_value
                     self.nodeList.append(left)
                     self.nodeList.append(right)
 
-
+    # recursively print the tree based on depth-first traversal
     def printNode(self, node, level):
         text = '\t'*level
         isLeafSign = "  "
@@ -69,31 +82,39 @@ class DecisionTree:
 
 
 array=np.array([1,0,1,1,1,0,0,1,1,0,1])
-credit_data = np.genfromtxt('D:/UU/Data Mining/datamining/assigment1/credit.txt', delimiter=',', skip_header=True)
+credit_data = np.genfromtxt('credit.txt', delimiter=',', skip_header=True)
 
-#gini-index impurity function: see presentation from lecture 37A, slide 21
+# gini-index impurity function: see presentation from lecture 37A, slide 21
 def impurity(array):
     return (len(array[array == 0])/len(array)) * (len(array[array == 1])/len(array))
 
+# redistribution error impurity function
+def impurity_R(array, total_samples):
+    return min(array[array == 0], array[array == 1]) / total_samples
+
 def bestsplit(x,y):
+    # sort the values of an attribute and determine splitpoints in between distinct values
     data_sorted = np.sort(np.unique(x))
     data_splitpoints = (data_sorted[0:len(data_sorted)-1] + data_sorted[1:len(data_sorted)]) / 2
 
+    # the impurity of this node so that impurity reduction can be determined
     parent_impurity = impurity(y)
     best_point = 0
     best_impurity_reduction = 0
-    if len(data_splitpoints) > 0:
-        for point in data_splitpoints:
-            indexes_lower = np.arange(0, len(x))[x <= point]
-            # indexes_higher = np.arange(0, len(x))[x > point]
-            # y[indexes_higher] == np.delete(y,indexes_lower)
-            # impurity reduction function: see presentation from lecture 37A, slide 18
-            imp_red = parent_impurity - ((len(indexes_lower) / len(x)) * impurity(y[indexes_lower]) + (
-                        len(np.delete(y, indexes_lower)) / len(x)) * impurity(np.delete(y, indexes_lower)))
-            # print(point, indexes_lower, x[indexes_lower], y[indexes_lower],imp_red)
-            if imp_red > best_impurity_reduction:
-                best_impurity_reduction = imp_red
-                best_point = point
+
+    # check impurity reduction for every splitpoint to see which is best
+    for point in data_splitpoints:
+
+        # get indexes of attributes with value lower or equal than the current splitpoint
+        indexes_lower = np.arange(0, len(x))[x <= point]
+
+        # impurity reduction function: see presentation from lecture 37A, slide 18
+        imp_red = parent_impurity - ((len(indexes_lower) / len(x)) * impurity(y[indexes_lower]) + (
+                    len(np.delete(y, indexes_lower)) / len(x)) * impurity(np.delete(y, indexes_lower)))
+
+        if imp_red > best_impurity_reduction:
+            best_impurity_reduction = imp_red
+            best_point = point
 
 
     return best_point, best_impurity_reduction
@@ -106,6 +127,6 @@ print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0
 tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
 tree.printTree()
 
-pima_data = np.genfromtxt('D:/UU/Data Mining/datamining/assigment1/pima_indians.txt', delimiter=',', skip_header=False)
-tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
+pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
+tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],10,5,len(pima_data[0]) - 1)
 #tree2.printTree()
