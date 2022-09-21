@@ -10,6 +10,8 @@ class DecisionTree:
             self.right = None
             self.attrs = attrs
             self.labels = labels
+            self.split_attr_index = -1
+            self.split_value = 0
 
     def __init__(self, x, y, nmin, minleaf, nfeat):
         self.root = self.Node(x,y)
@@ -39,6 +41,7 @@ class DecisionTree:
                     left = self.Node(lower_split,node.labels[np.arange(0,len(node.labels))[node.attrs[:,split_attribute] <= best_split_value]])
                     right = self.Node(upper_split,node.labels[np.arange(0,len(node.labels))[node.attrs[:,split_attribute] > best_split_value]])
                     node.left, node.right = left, right
+                    node.split_attr_index, node.split_value = split_attribute, best_split_value
                     self.nodeList.append(left)
                     self.nodeList.append(right)
 
@@ -49,7 +52,7 @@ class DecisionTree:
         isLeaf = node.left is None and node.right is None
         if isLeaf:
             isLeafSign = "* "
-        print(text + isLeafSign + "data: " + str(node.labels) + " impurity: " + str(impurity(node.labels)))
+        print(text + isLeafSign + "data: " + str(node.labels) + " split attribute: " + str(node.split_attr_index) + " impurity: " + str(impurity(node.labels)))
         if not isLeaf:
             self.printNode(node.left, level+1)
             self.printNode(node.right, level+1)
@@ -105,4 +108,4 @@ tree.printTree()
 
 pima_data = np.genfromtxt('D:/UU/Data Mining/datamining/assigment1/pima_indians.txt', delimiter=',', skip_header=False)
 tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
-tree2.printTree()
+#tree2.printTree()
