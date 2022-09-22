@@ -91,9 +91,7 @@ def tree_pred(x,tr):
             y.append(0)
         else:
             y.append(1)
-        #y = y.append(majority_class_label)
     return y
-
 
 array=np.array([1,0,1,1,1,0,0,1,1,0,1])
 credit_data = np.genfromtxt('credit.txt', delimiter=',', skip_header=True)
