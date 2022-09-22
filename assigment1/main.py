@@ -76,14 +76,28 @@ class DecisionTree:
     def predict(self):
         pass
 
+def tree_pred(x,tr):
+    y = []
+    for i in x:
+        node = tr.root
+        while not (node.left is None and node.right is None):
+            case_value = i[node.split_attr_index]
+            if case_value <= node.split_value:
+                node = node.left
+            else:
+                node = node.right
 
-
-
+        if np.mean(node.labels) <= 0.5:
+            y.append(0)
+        else:
+            y.append(1)
+        #y = y.append(majority_class_label)
+    return y
 
 
 array=np.array([1,0,1,1,1,0,0,1,1,0,1])
 credit_data = np.genfromtxt('credit.txt', delimiter=',', skip_header=True)
-
+print(credit_data) #delete
 # gini-index impurity function: see presentation from lecture 37A, slide 21
 def impurity(array):
     return (len(array[array == 0])/len(array)) * (len(array[array == 1])/len(array))
@@ -127,6 +141,11 @@ print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0
 tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
 tree.printTree()
 
+print(tree_pred(credit_data[:,:5],tree))
+
+
+
 pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
 tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],10,5,len(pima_data[0]) - 1)
+
 #tree2.printTree()
