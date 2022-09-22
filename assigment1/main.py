@@ -145,5 +145,4 @@ print(tree_pred(credit_data[:,:5],tree))
 
 pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
 tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],10,5,len(pima_data[0]) - 1)
-
 #tree2.printTree()
