@@ -76,10 +76,13 @@ class DecisionTree:
     def predict(self):
         pass
 
+# predict the class of new case given a tree
 def tree_pred(x,tr):
     y = []
     for i in x:
+        # start in root node of tree
         node = tr.root
+        # if not in a leaf node, check split condition and move to correct next node
         while not (node.left is None and node.right is None):
             case_value = i[node.split_attr_index]
             if case_value <= node.split_value:
@@ -87,6 +90,7 @@ def tree_pred(x,tr):
             else:
                 node = node.right
 
+        # assign new case to majority class of leaf node
         if np.mean(node.labels) <= 0.5:
             y.append(0)
         else:
