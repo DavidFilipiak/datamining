@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.metrics import confusion_matrix
 
 def tree_grow(x, y, nmin, minleaf, nfeat):
     return DecisionTree(x, y, nmin, minleaf, nfeat)
@@ -99,7 +100,7 @@ def tree_pred(x,tr):
 
 array=np.array([1,0,1,1,1,0,0,1,1,0,1])
 credit_data = np.genfromtxt('credit.txt', delimiter=',', skip_header=True)
-print(credit_data) #delete
+
 # gini-index impurity function: see presentation from lecture 37A, slide 21
 def impurity(array):
     return (len(array[array == 0])/len(array)) * (len(array[array == 1])/len(array))
@@ -136,17 +137,23 @@ def bestsplit(x,y):
     return best_point, best_impurity_reduction
 
 
-print(impurity(array))
-print(bestsplit(credit_data[:,3],credit_data[:,5]))
-print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0,0]))) #test for homework 1, question 2
+#print(impurity(array))
+#print(bestsplit(credit_data[:,3],credit_data[:,5]))
+#print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0,0]))) #test for homework 1, question 2
 
 tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
-tree.printTree()
+#tree.printTree()
 
-print(tree_pred(credit_data[:,:5],tree))
+#print(tree_pred(credit_data[:,:5],tree))
 
 
 
 pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
-tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],10,5,len(pima_data[0]) - 1)
-#tree2.printTree()
+tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
+predictions = np.array(tree_pred(pima_data[:,:8], tree2))
+originals = pima_data[:,8]
+
+#  Expected output:
+#  444  56
+#  54   214
+print(confusion_matrix(originals, predictions))
