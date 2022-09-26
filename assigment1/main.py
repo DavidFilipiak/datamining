@@ -136,6 +136,39 @@ def bestsplit(x,y):
 
     return best_point, best_impurity_reduction
 
+# grows a tree on each of m bootstrap samples and returns list with these m trees
+def tree_grow_b(x, y, nmin, minleaf, nfeat, m):
+
+    tree_list = []
+
+    for sample in range(m):
+        tree = tree_grow(x, y, nmin, minleaf, nfeat)
+        tree_list.append(tree)
+
+    return tree_list
+
+# applies tree_pred on x using each tree from tree_grow_b
+# returns majority of the predictions as final prediction
+def tree_pred_b(tr_list, x):
+
+    predictions = []
+    y = []
+
+    for tree in tr_list:
+        prediction = tree_pred(x,tree)
+        predictions.append(prediction)
+
+    for i in range(len(x)):
+        i_predictions = []
+        for prediction in predictions:
+            i_predictions.append(prediction[i])
+
+        if np.mean(i_predictions) <= 0.5:
+            y.append(0)
+        else:
+            y.append(1)
+
+    return y
 
 #print(impurity(array))
 #print(bestsplit(credit_data[:,3],credit_data[:,5]))
