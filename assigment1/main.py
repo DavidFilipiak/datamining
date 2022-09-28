@@ -38,7 +38,7 @@ class DecisionTree:
 
                 # for every randomly selected attribute, determine which one provides the best split
                 for i in attrs_indexes:
-                    splitpoint, impurity_reduction = bestsplit(node.attrs[:, i], node.labels)
+                    splitpoint, impurity_reduction = bestsplit(node.attrs[:, i], node.labels, minleaf)
                     if impurity_reduction > best_impurity_reduction:
                         split_attribute = i
                         best_impurity_reduction = impurity_reduction
@@ -49,15 +49,15 @@ class DecisionTree:
                 indexes_upper = np.delete(np.arange(0, len(node.attrs[:, split_attribute])), indexes_lower)
 
                 # only continue if both branches of the best split have more observations than 'minleaf'
-                if len(indexes_lower) >= minleaf and len(indexes_upper) >= minleaf:
+                #if len(indexes_lower) >= minleaf and len(indexes_upper) >= minleaf:
 
-                    # create a new child nodes to the current node, and add both to the node list
-                    left = self.Node(node.attrs[indexes_lower], node.labels[indexes_lower])
-                    right = self.Node(node.attrs[indexes_upper], node.labels[indexes_upper])
-                    node.left, node.right = left, right
-                    node.split_attr_index, node.split_value = split_attribute, best_split_value
-                    self.nodeList.append(left)
-                    self.nodeList.append(right)
+                # create a new child nodes to the current node, and add both to the node list
+                left = self.Node(node.attrs[indexes_lower], node.labels[indexes_lower])
+                right = self.Node(node.attrs[indexes_upper], node.labels[indexes_upper])
+                node.left, node.right = left, right
+                node.split_attr_index, node.split_value = split_attribute, best_split_value
+                self.nodeList.append(left)
+                self.nodeList.append(right)
 
     # recursively print the tree based on depth-first traversal
     def printNode(self, node, level):
@@ -109,7 +109,7 @@ def impurity(array):
 def impurity_R(array, total_samples):
     return min(array[array == 0], array[array == 1]) / total_samples
 
-def bestsplit(x,y):
+def bestsplit(x,y,minleaf):
     # sort the values of an attribute and determine splitpoints in between distinct values
     data_sorted = np.sort(np.unique(x))
     data_splitpoints = (data_sorted[0:len(data_sorted)-1] + data_sorted[1:len(data_sorted)]) / 2
@@ -124,12 +124,12 @@ def bestsplit(x,y):
 
         # get indexes of attributes with value lower or equal than the current splitpoint
         indexes_lower = np.arange(0, len(x))[x <= point]
+        indexes_upper = np.delete(np.arange(0, len(y)), indexes_lower)
 
         # impurity reduction function: see presentation from lecture 37A, slide 18
-        imp_red = parent_impurity - ((len(indexes_lower) / len(x)) * impurity(y[indexes_lower]) + (
-                    len(np.delete(y, indexes_lower)) / len(x)) * impurity(np.delete(y, indexes_lower)))
+        imp_red = parent_impurity - ((len(indexes_lower) / len(x)) * impurity(y[indexes_lower]) + (len(indexes_upper) / len(x)) * impurity(y[indexes_upper]))
 
-        if imp_red > best_impurity_reduction:
+        if len(indexes_lower) >= minleaf and len(indexes_upper) >= minleaf and imp_red > best_impurity_reduction:
             best_impurity_reduction = imp_red
             best_point = point
 
@@ -183,6 +183,7 @@ tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
 
 pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
 tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
+tree2.printTree()
 predictions = np.array(tree_pred(pima_data[:,:8], tree2))
 originals = pima_data[:,8]
 
