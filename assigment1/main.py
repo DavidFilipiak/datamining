@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
+import time
 
 def tree_grow(x, y, nmin, minleaf, nfeat):
     return DecisionTree(x, y, nmin, minleaf, nfeat)
@@ -182,8 +183,10 @@ tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
 
 
 pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
+start = time.time()
 tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
-tree2.printTree()
+print(time.time() - start, "seconds")
+#tree2.printTree()
 predictions = np.array(tree_pred(pima_data[:,:8], tree2))
 originals = pima_data[:,8]
 
