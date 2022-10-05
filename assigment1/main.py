@@ -182,15 +182,23 @@ tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
 
 
 
-pima_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False)
+test_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False) # pima_indians
+#test_data = np.genfromtxt('eclipse-metrics-packages-2.0.csv', delimiter=';', skip_header=True) # test set 1
+size = len(test_data[0]) - 1
 start = time.time()
-tree2 = tree_grow(pima_data[:,:8],pima_data[:,8],20,5,len(pima_data[0]) - 1)
-print(time.time() - start, "seconds")
+tree2 = tree_grow(test_data[:,:size],test_data[:,size],15,5,size)
+print("Tree grow:", time.time() - start, "seconds")
 #tree2.printTree()
-predictions = np.array(tree_pred(pima_data[:,:8], tree2))
-originals = pima_data[:,8]
+start = time.time()
+predictions = np.array(tree_pred(test_data[:,:size], tree2))
+print("Tree pred:", time.time() - start, "seconds")
+originals = test_data[:,size]
 
 #  Expected output:
 #  444  56
 #  54   214
-print(confusion_matrix(originals, predictions))
+conf_matrix = confusion_matrix(originals, predictions)
+accuracy = (conf_matrix[0][0] + conf_matrix[1][1]) / sum(sum(conf_matrix))
+precision = conf_matrix[0][0] / (conf_matrix[0][0] + conf_matrix[1][0])
+recall = conf_matrix[0][0] / (conf_matrix[0][0] + conf_matrix[0][1])
+print("Confusion Matrix:", conf_matrix, "Accuracy:", accuracy, "Precision:", precision, "Recall", recall, sep="\n")
