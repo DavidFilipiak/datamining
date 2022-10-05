@@ -204,3 +204,64 @@ accuracy = (conf_matrix[0][0] + conf_matrix[1][1]) / sum(sum(conf_matrix))
 precision = conf_matrix[0][0] / (conf_matrix[0][0] + conf_matrix[1][0])
 recall = conf_matrix[0][0] / (conf_matrix[0][0] + conf_matrix[0][1])
 print("Confusion Matrix:", conf_matrix, "Accuracy:", accuracy, "Precision:", precision, "Recall", recall, sep="\n")
+
+
+def calculateMetrics(confusion_matrix):
+    ##Acuracy
+    acc = (confusion_matrix[1,1] + confusion_matrix[0,0]) / confusion_matrix.sum()
+    print("Accuracy: ", acc)
+
+    ## Precision
+    prc = confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[0,1])
+    print("Precision: ", prc)
+
+    ## Recall
+    rcall = confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,0])
+    print("Recall: ", rcall)
+
+## Analysis
+## File Reading
+eclipse_train_data = np.genfromtxt('eclipse-metrics-packages-2.0.csv', delimiter=';', encoding="utf8")
+eclipse_test_data = np.genfromtxt('eclipse-metrics-packages-3.0.csv', delimiter=';', encoding="utf8")
+
+# Training set
+eclipse_train_x = np.delete(eclipse_train_data,[0, 1, 3], 1)
+eclipse_train_x = eclipse_train_x[1:,:41]
+
+eclipse_train_y = eclipse_train_data[1:,3]
+eclipse_train_y[eclipse_train_y > 0] = 1
+
+# Testing set
+eclipse_test_x = np.delete(eclipse_test_data,[0, 1, 3], 1)
+eclipse_test_x = eclipse_test_x[1:,:41]
+
+eclipse_test_y = eclipse_test_data[1:,3]
+eclipse_test_y[eclipse_test_y > 0] = 1
+
+## Tree analysis
+tree_eclipse = tree_grow(eclipse_train_x, eclipse_train_y, 15, 5, 41)
+tree_eclipse.printTree()
+
+predictions_tree = np.array(tree_pred(eclipse_test_x, tree_eclipse))
+cm_tree = confusion_matrix(eclipse_test_y, predictions_tree)
+
+print("\n TREE")
+calculateMetrics(cm_tree)
+
+## Bagging analysis
+bagging_eclipse = tree_grow_b(eclipse_train_x, eclipse_train_y, 15, 5, 41, 100)
+
+predictions_bagging = np.array(tree_pred_b(bagging_eclipse, eclipse_test_x))
+cm_bagging = confusion_matrix(eclipse_test_y, predictions_bagging)
+
+print("\n BAGGING")
+calculateMetrics(cm_bagging)
+
+## Random forest analysis
+rf_eclipse = tree_grow_b(eclipse_train_x, eclipse_train_y, 15, 5, 6, 100)
+
+predictions_rf = np.array(tree_pred_b(rf_eclipse, eclipse_test_x))
+cm_rf = confusion_matrix(eclipse_test_y, predictions_rf)
+
+print("\n RANDOM FOREST")
+calculateMetrics(cm_rf)
