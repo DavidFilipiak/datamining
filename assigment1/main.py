@@ -143,7 +143,9 @@ def tree_grow_b(x, y, nmin, minleaf, nfeat, m):
     tree_list = []
 
     for sample in range(m):
-        tree = tree_grow(x, y, nmin, minleaf, nfeat)
+        # perform bootstrap sampling on x
+        boostrap_sample_indexes = np.random.choice(np.arange(0, len(y)), size=len(y), replace=True)
+        tree = tree_grow(x[boostrap_sample_indexes], y, nmin, minleaf, nfeat)
         tree_list.append(tree)
 
     return tree_list
@@ -175,7 +177,7 @@ def tree_pred_b(tr_list, x):
 #print(bestsplit(credit_data[:,3],credit_data[:,5]))
 #print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0,0]))) #test for homework 1, question 2
 
-tree = tree_grow(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1)
+tree = tree_grow_b(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1,1)
 #tree.printTree()
 
 #print(tree_pred(credit_data[:,:5],tree))
