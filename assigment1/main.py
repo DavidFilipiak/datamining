@@ -50,15 +50,15 @@ class DecisionTree:
                 indexes_upper = np.delete(np.arange(0, len(node.attrs[:, split_attribute])), indexes_lower)
 
                 # only continue if both branches of the best split have more observations than 'minleaf'
-                #if len(indexes_lower) >= minleaf and len(indexes_upper) >= minleaf:
+                if len(indexes_lower) >= minleaf and len(indexes_upper) >= minleaf:
 
-                # create a new child nodes to the current node, and add both to the node list
-                left = self.Node(node.attrs[indexes_lower], node.labels[indexes_lower])
-                right = self.Node(node.attrs[indexes_upper], node.labels[indexes_upper])
-                node.left, node.right = left, right
-                node.split_attr_index, node.split_value = split_attribute, best_split_value
-                self.nodeList.append(left)
-                self.nodeList.append(right)
+                    # create a new child nodes to the current node, and add both to the node list
+                    left = self.Node(node.attrs[indexes_lower], node.labels[indexes_lower])
+                    right = self.Node(node.attrs[indexes_upper], node.labels[indexes_upper])
+                    node.left, node.right = left, right
+                    node.split_attr_index, node.split_value = split_attribute, best_split_value
+                    self.nodeList.append(left)
+                    self.nodeList.append(right)
 
     # recursively print the tree based on depth-first traversal
     def printNode(self, node, level):
@@ -141,13 +141,16 @@ def bestsplit(x,y,minleaf):
 def tree_grow_b(x, y, nmin, minleaf, nfeat, m):
 
     tree_list = []
-
+    index = 0
     for sample in range(m):
+        print(f"\rGrowing trees: {index + 1}/{m}", end='')
         # perform bootstrap sampling on x
         boostrap_sample_indexes = np.random.choice(np.arange(0, len(y)), size=len(y), replace=True)
         tree = tree_grow(x[boostrap_sample_indexes], y, nmin, minleaf, nfeat)
         tree_list.append(tree)
+        index += 1
 
+    print()
     return tree_list
 
 # applies tree_pred on x using each tree from tree_grow_b
@@ -177,7 +180,7 @@ def tree_pred_b(tr_list, x):
 #print(bestsplit(credit_data[:,3],credit_data[:,5]))
 #print(bestsplit(np.array([10,10,10,20,20,30,30,40,40]),np.array([0,0,1,0,1,1,1,0,0]))) #test for homework 1, question 2
 
-tree = tree_grow_b(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1,1)
+#tree = tree_grow_b(credit_data[:,:5],credit_data[:,5],2,1,len(credit_data[0]) - 1,1)
 #tree.printTree()
 
 #print(tree_pred(credit_data[:,:5],tree))
@@ -188,11 +191,11 @@ test_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False) 
 #test_data = np.genfromtxt('eclipse-metrics-packages-2.0.csv', delimiter=';', skip_header=True) # test set 1
 size = len(test_data[0]) - 1
 start = time.time()
-tree2 = tree_grow(test_data[:,:size],test_data[:,size],15,5,size)
+tree2 = tree_grow_b(test_data[:,:size],test_data[:,size],15,5,size,1)
 print("Tree grow:", time.time() - start, "seconds")
 #tree2.printTree()
 start = time.time()
-predictions = np.array(tree_pred(test_data[:,:size], tree2))
+predictions = np.array(tree_pred_b(tree2, test_data[:,:size]))
 print("Tree pred:", time.time() - start, "seconds")
 originals = test_data[:,size]
 
@@ -200,11 +203,18 @@ originals = test_data[:,size]
 #  444  56
 #  54   214
 conf_matrix = confusion_matrix(originals, predictions)
-accuracy = (conf_matrix[0][0] + conf_matrix[1][1]) / sum(sum(conf_matrix))
-precision = conf_matrix[0][0] / (conf_matrix[0][0] + conf_matrix[1][0])
-recall = conf_matrix[0][0] / (conf_matrix[0][0] + conf_matrix[0][1])
+accuracy = (conf_matrix[1,1] + conf_matrix[0,0]) / conf_matrix.sum()
+precision = conf_matrix[1,1] / (conf_matrix[1,1] + conf_matrix[0,1])
+recall = conf_matrix[1,1] / (conf_matrix[1,1] + conf_matrix[1,0])
 print("Confusion Matrix:", conf_matrix, "Accuracy:", accuracy, "Precision:", precision, "Recall", recall, sep="\n")
 
+###
+###
+###
+print("-----------", " ANALYSIS", "-----------", sep="\n")
+###
+###
+###
 
 def calculateMetrics(confusion_matrix):
     ##Acuracy
