@@ -225,18 +225,12 @@ eclipse_train_data = np.genfromtxt('eclipse-metrics-packages-2.0.csv', delimiter
 eclipse_test_data = np.genfromtxt('eclipse-metrics-packages-3.0.csv', delimiter=';', encoding="utf8")
 
 # Training set
-eclipse_train_x = np.delete(eclipse_train_data,[0, 1, 3], 1)
-eclipse_train_x = eclipse_train_x[1:,:41]
-
-eclipse_train_y = eclipse_train_data[1:,3]
-eclipse_train_y[eclipse_train_y > 0] = 1
+eclipse_train_x = eclipse_train_data[1:,:41]
+eclipse_train_y = eclipse_train_data[1:,41]
 
 # Testing set
-eclipse_test_x = np.delete(eclipse_test_data,[0, 1, 3], 1)
-eclipse_test_x = eclipse_test_x[1:,:41]
-
-eclipse_test_y = eclipse_test_data[1:,3]
-eclipse_test_y[eclipse_test_y > 0] = 1
+eclipse_test_x = eclipse_test_data[1:,:41]
+eclipse_test_y = eclipse_test_data[1:,41]
 
 ## Tree analysis
 tree_eclipse = tree_grow(eclipse_train_x, eclipse_train_y, 15, 5, 41)
@@ -255,6 +249,7 @@ predictions_bagging = np.array(tree_pred_b(bagging_eclipse, eclipse_test_x))
 cm_bagging = confusion_matrix(eclipse_test_y, predictions_bagging)
 
 print("\n BAGGING")
+print(cm_bagging)
 calculateMetrics(cm_bagging)
 
 ## Random forest analysis
@@ -264,4 +259,5 @@ predictions_rf = np.array(tree_pred_b(rf_eclipse, eclipse_test_x))
 cm_rf = confusion_matrix(eclipse_test_y, predictions_rf)
 
 print("\n RANDOM FOREST")
+print(cm_rf)
 calculateMetrics(cm_rf)
