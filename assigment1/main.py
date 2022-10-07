@@ -1,5 +1,7 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix
+from statsmodels.stats.contingency_tables import mcnemar
+
 import time
 
 def tree_grow(x, y, nmin, minleaf, nfeat):
@@ -229,6 +231,36 @@ def calculateMetrics(confusion_matrix):
     rcall = confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,0])
     print("Recall: ", rcall)
 
+def performMcNemar(predictions_a, predictions_b):
+    i = 0
+    no_no = 0
+    no_yes = 0
+    yes_no = 0
+    yes_yes = 0
+
+    while i < len(predictions_a):
+        if predictions_a[i] == 0 and predictions_b[i] == 0:
+            no_no +=1
+        if predictions_a[i] == 0 and predictions_b[i] == 1:
+            no_yes +=1
+        if predictions_a[i]== 1 and predictions_b[i] == 0:
+            yes_no +=1
+        if predictions_a[i] == 1 and predictions_b[i] == 1:
+            yes_yes +=1
+        i+=1
+    ## define contingency table
+    table = [[yes_yes, yes_no],
+    		 [no_yes, no_no]]
+    print(table)
+    result = mcnemar(table, exact=True)
+    print('statistic=%.3f, p-value=%.3f' % (result.statistic, result.pvalue))
+    # interpret the p-value 
+    alpha = 0.05
+    if result.pvalue > alpha:
+        print('Same proportions of errors (fail to reject H0)')
+    else:
+    	print('Different proportions of errors (reject H0)')
+
 ## Analysis
 ## File Reading
 eclipse_train_data = np.genfromtxt('eclipse-metrics-packages-2.0.csv', delimiter=';', encoding="utf8")
@@ -250,6 +282,7 @@ predictions_tree = np.array(tree_pred(eclipse_test_x, tree_eclipse))
 cm_tree = confusion_matrix(eclipse_test_y, predictions_tree)
 
 print("\n TREE")
+print(cm_tree)
 calculateMetrics(cm_tree)
 
 ## Bagging analysis
@@ -271,3 +304,13 @@ cm_rf = confusion_matrix(eclipse_test_y, predictions_rf)
 print("\n RANDOM FOREST")
 print(cm_rf)
 calculateMetrics(cm_rf)
+
+## Statistical Test - McNemar
+print("McNemar - Single Tree vs Bagging Forest")
+performMcNemar(predictions_tree, predictions_bagging)
+print("\n")
+print("McNemar - Bagging Forest vs Random Forest")
+performMcNemar(predictions_bagging, predictions_rf)
+
+print("McNemar - Single Tree vs Random Forest")
+performMcNemar(predictions_tree, predictions_rf)
