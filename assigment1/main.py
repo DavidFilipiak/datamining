@@ -231,7 +231,7 @@ def calculateMetrics(confusion_matrix):
     rcall = confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,0])
     print("Recall: ", rcall)
 
-def performMcNemar(predictions_a, predictions_b):
+def performMcNemar(predictions_a, predictions_b, classification):
     i = 0
     no_no = 0
     no_yes = 0
@@ -239,21 +239,21 @@ def performMcNemar(predictions_a, predictions_b):
     yes_yes = 0
 
     while i < len(predictions_a):
-        if predictions_a[i] == 0 and predictions_b[i] == 0:
-            no_no +=1
-        if predictions_a[i] == 0 and predictions_b[i] == 1:
-            no_yes +=1
-        if predictions_a[i]== 1 and predictions_b[i] == 0:
-            yes_no +=1
-        if predictions_a[i] == 1 and predictions_b[i] == 1:
+        if classification[i] == predictions_a[i] == predictions_b[i]:
             yes_yes +=1
+        if classification[i] != (predictions_a[i] == predictions_b[i]):
+            no_no +=1
+        if classification[i] == predictions_a[i] != predictions_b[i]:
+            yes_no +=1
+        if classification[i] == predictions_b[i] != predictions_a[i]:
+            no_yes +=1
         i+=1
     ## define contingency table
     table = [[yes_yes, yes_no],
     		 [no_yes, no_no]]
     print(table)
     result = mcnemar(table, exact=True)
-    print('statistic=%.3f, p-value=%.3f' % (result.statistic, result.pvalue))
+    print('statistic=%.5f, p-value=%.35' % (result.statistic, result.pvalue))
     # interpret the p-value 
     alpha = 0.05
     if result.pvalue > alpha:
@@ -307,10 +307,10 @@ calculateMetrics(cm_rf)
 
 ## Statistical Test - McNemar
 print("McNemar - Single Tree vs Bagging Forest")
-performMcNemar(predictions_tree, predictions_bagging)
+performMcNemar(predictions_tree, predictions_bagging, eclipse_test_y)
 print("\n")
 print("McNemar - Bagging Forest vs Random Forest")
-performMcNemar(predictions_bagging, predictions_rf)
+performMcNemar(predictions_bagging, predictions_rf,eclipse_test_y)
 
 print("McNemar - Single Tree vs Random Forest")
-performMcNemar(predictions_tree, predictions_rf)
+performMcNemar(predictions_tree, predictions_rf,eclipse_test_y)
