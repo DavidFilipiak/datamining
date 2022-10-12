@@ -253,7 +253,7 @@ def performMcNemar(predictions_a, predictions_b, classification):
     		 [no_yes, no_no]]
     print(table)
     result = mcnemar(table, exact=True)
-    print('statistic=%.5f, p-value=%.35' % (result.statistic, result.pvalue))
+    print('statistic=%.5f, p-value=%.35f' % (result.statistic, result.pvalue))
     # interpret the p-value 
     alpha = 0.05
     if result.pvalue > alpha:
