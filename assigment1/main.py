@@ -191,11 +191,11 @@ test_data = np.genfromtxt('pima_indians.txt', delimiter=',', skip_header=False) 
 #test_data = np.genfromtxt('eclipse-metrics-packages-2.0.csv', delimiter=';', skip_header=True) # test set 1
 size = len(test_data[0]) - 1
 start = time.time()
-tree2 = tree_grow_b(test_data[:,:size],test_data[:,size],15,5,size,1)
+tree2 = tree_grow(test_data[:,:size],test_data[:,size],20,5,size)
 print("Tree grow:", time.time() - start, "seconds")
 #tree2.printTree()
 start = time.time()
-predictions = np.array(tree_pred_b(tree2, test_data[:,:size]))
+predictions = np.array(tree_pred(test_data[:,:size], tree2))
 print("Tree pred:", time.time() - start, "seconds")
 originals = test_data[:,size]
 
