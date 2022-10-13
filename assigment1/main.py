@@ -196,7 +196,7 @@ class DecisionTree:
                 is_leaf_sign = "* "
 
             self.printNode(node.left, level+1, max_levels)
-            print(text + is_leaf_sign + "LEVEL " + str(level) + ": 0 = [" + str(len(node.labels[node.labels == 0])) + "], 1 = [" + str(len(node.labels[node.labels == 1])) + "], impurity: " + str(impurity(node.labels)))
+            print(text + is_leaf_sign + "LEVEL " + str(level) + ": 0 = [" + str(len(node.labels[node.labels == 0])) + "], 1 = [" + str(len(node.labels[node.labels == 1])) + "], impurity: " + str(impurity(node.labels)) + " split_attr: " + str(node.split_attr_index))
             self.printNode(node.right, level+1, max_levels)
 
     # function that prints the decision tree to the console.
@@ -228,10 +228,11 @@ def calculate_metrics(confusion_matrix):
     rcall = confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,0])
     print("Recall: ", rcall)
 
-# pefrom McNemar statistical test on provided ...
-# predictions_a -> ...
-# predictions_b -> ...
-# classification -> ...
+
+# pefrom McNemar statistical test on the provided models
+# predictions_a -> first model for testing
+# predictions_b -> second model for testing
+# classification -> the labels to compare the models to
 def performMcNemar(predictions_a, predictions_b, classification):
     i = 0
     no_no = 0
@@ -281,7 +282,7 @@ start = time.time()
 tree_eclipse = tree_grow(eclipse_train_x, eclipse_train_y, 15, 5, 41)
 print("Time to grow: " + str(time.time() - start) + " seconds")
 
-tree_eclipse.printTree(max_levels=3)
+tree_eclipse.printTree(max_levels=2)
 
 start = time.time()
 predictions_tree = np.array(tree_pred(eclipse_test_x, tree_eclipse))
