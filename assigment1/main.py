@@ -241,13 +241,13 @@ def performMcNemar(predictions_a, predictions_b, classification):
     yes_yes = 0
 
     while i < len(predictions_a):
-        if classification[i] == predictions_a[i] == predictions_b[i]:
+        if classification[i] == predictions_a[i] and predictions_a[i] == predictions_b[i]:
             yes_yes +=1
-        if classification[i] != (predictions_a[i] == predictions_b[i]):
+        if classification[i] != predictions_a[i] and classification[i] != predictions_b[i]:
             no_no +=1
-        if classification[i] == predictions_a[i] != predictions_b[i]:
+        if classification[i] == predictions_a[i] and classification[i] != predictions_b[i]:
             yes_no +=1
-        if classification[i] == predictions_b[i] != predictions_a[i]:
+        if classification[i] == predictions_b[i] and classification[i]  != predictions_a[i]:
             no_yes +=1
         i+=1
     ## define contingency table
