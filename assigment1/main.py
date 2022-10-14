@@ -49,7 +49,7 @@ def tree_grow_b(x, y, nmin, minleaf, nfeat, m):
         print(f"\rGrowing trees: {index + 1}/{m}", end='')
         # perform bootstrap sampling on x
         boostrap_sample_indexes = np.random.choice(np.arange(0, len(y)), size=len(y), replace=True)
-        tree = tree_grow(x[boostrap_sample_indexes], y, nmin, minleaf, nfeat)
+        tree = tree_grow(x[boostrap_sample_indexes], y[boostrap_sample_indexes], nmin, minleaf, nfeat)
         tree_list.append(tree)
         index += 1
 
