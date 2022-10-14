@@ -1,3 +1,8 @@
+# AUTHORS
+# Beatriz Zamith(2843927)
+# Juul Schoevers(6026923)
+# David Filipiak(2932091)
+
 import numpy as np
 from sklearn.metrics import confusion_matrix
 from statsmodels.stats.contingency_tables import mcnemar
@@ -112,7 +117,7 @@ def bestsplit(x,y,minleaf):
         indexes_lower = np.arange(0, len(x))[x <= point]
         indexes_upper = np.delete(np.arange(0, len(y)), indexes_lower)
 
-        # impurity reduction function: see presentation from lecture 37A, slide 18
+        # implementation of the impurity reduction formula
         imp_red = parent_impurity - ((len(indexes_lower) / len(x)) * impurity(y[indexes_lower]) + (len(indexes_upper) / len(x)) * impurity(y[indexes_upper]))
 
         # only consider the split to be suitable if it satisfies the minleaf constraint as well as provides better impurity reduction
