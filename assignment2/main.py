@@ -44,7 +44,7 @@ def preprocess_data(reviews):
         r = r.translate(str.maketrans('', '', string.punctuation))
         r = r.strip()
         #tokens = word_tokenize(r)
-        #r = [i for i in tokens if not i in ENGLISH_STOP_WORDS]
+        #r = [i for i in r if i not in ENGLISH_STOP_WORDS]
         #r = [lemmatizer.lemmatize(word) for word in r]
         preprocessed_reviews.append(r)
 
@@ -68,15 +68,17 @@ def load_data_in_frame(folds):
     df = pd.merge(label_df, pre_review_df, right_index=True, left_index=True)
     return df
 
-train_folds = ['fold1','fold2','fold3','fold4']
-test_folds = ['fold5']
 
-train_data = load_data_in_frame(train_folds)
-test_data = load_data_in_frame(test_folds)
 
-# to check:
-print(len(train_data),len(test_data))
-print(train_data.head())
-print(test_data.head())
+if __name__ == "__main__":
+    train_folds = ['fold1', 'fold2', 'fold3', 'fold4']
+    test_folds = ['fold5']
 
+    train_data = load_data_in_frame(train_folds)
+    test_data = load_data_in_frame(test_folds)
+
+    # to check:
+    print(len(train_data), len(test_data))
+    print(train_data.head())
+    print(test_data.head())
 
