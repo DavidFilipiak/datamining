@@ -1,6 +1,7 @@
 from sklearn.naive_bayes import *
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.feature_extraction._stop_words import ENGLISH_STOP_WORDS
+from sklearn.feature_selection import chi2, SelectKBest, SelectPercentile
 from sklearn.metrics import confusion_matrix
 import pandas as pd
 import numpy as np
@@ -31,8 +32,13 @@ def analyze(vectorizer, train_data, test_data):
     tfidf = TfidfTransformer()
     tfidf_transformed = tfidf.fit_transform(train_transformed)
 
+    chi = SelectPercentile(chi2, percentile=80)
+    chi_result = chi.fit_transform(train_transformed, list(train_data.values[:, 0]))
+    test_transformed = chi.transform(test_transformed)
+    #print(train_transformed, chi_result)
+
     model = MultinomialNB()
-    model.fit(train_transformed, list(train_data.values[:, 0]))
+    model.fit(chi_result, list(train_data.values[:, 0]))
     predictions = model.predict(test_transformed)
 
     show_most_informative_features(feature_names, model)
