@@ -53,14 +53,18 @@ test_folds = ['fold5']
 train_data = main.load_data_in_frame(train_folds)
 test_data = main.load_data_in_frame(test_folds)
 
-print("\nKeep stopping words:")
-vectorizer = CountVectorizer(min_df=0.03, ngram_range=(1, 2))
+#print("\nKeep stopping words:")
+#vectorizer = CountVectorizer(min_df=0.05, ngram_range=(1, 2))
+#analyze(vectorizer, train_data, test_data)
+
+print("\nUnigrams:")
+vectorizer = CountVectorizer(analyzer="word", stop_words = "english", min_df=0.00)  #stop-words:"english"
 analyze(vectorizer, train_data, test_data)
 
-print("\nRemove stopping words:")
-vectorizer = CountVectorizer(analyzer=remove_stopping_words, min_df=0.03, ngram_range=(1, 2))  #stop-words:"english"
-analyze(vectorizer, train_data, test_data)
 
+print("\nBigrams:")
+vectorizer = CountVectorizer(analyzer="word", stop_words = "english", ngram_range=(2, 2), min_df=0.00)  #stop-words:"english"
+analyze(vectorizer, train_data, test_data)
 
 
 
