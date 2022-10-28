@@ -1,14 +1,16 @@
 import main
-from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import confusion_matrix
 
-def tree_analysis(X_train, y_train):
+def forest_analysis(X_train, y_train):
 
-    model = tree.DecisionTreeClassifier()
-    parameters = {'criterion': ['gini', 'entropy'],
-                  'max_depth': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20]}
+    model = RandomForestClassifier(random_state=42)
+    parameters = {'n_estimators': [200,400,600,800],
+                  #'max_features': ['auto', 'sqrt', 'log2'],
+                  'max_depth': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20],
+                  'criterion': ['gini', 'entropy']}
 
     grid = GridSearchCV(estimator=model, param_grid=parameters, cv=3)
     grid.fit(X_train,y_train)
@@ -32,7 +34,7 @@ vectorizer = CountVectorizer(analyzer="word", stop_words = "english")
 train_unigram = vectorizer.fit_transform(train_data.values[:, 1])
 test_unigram = vectorizer.transform(test_data.values[:, 1])
 
-unigram_model = tree_analysis(train_unigram, list(train_data.values[:, 0]))
+unigram_model = forest_analysis(train_unigram, list(train_data.values[:, 0]))
 
 print("\nUnigram Model Analysis: \n")
 predictions = (unigram_model.predict(test_unigram))
@@ -44,14 +46,9 @@ vectorizer2 = CountVectorizer(analyzer="word", stop_words = "english", ngram_ran
 train_bigram = vectorizer2.fit_transform(train_data.values[:, 1])
 test_bigram = vectorizer2.transform(test_data.values[:, 1])
 
-bigram_model = tree_analysis(train_bigram, list(train_data.values[:, 0]))
+bigram_model = forest_analysis(train_bigram, list(train_data.values[:, 0]))
 
 print("\nBigram Model Analysis: \n")
 predictions = (bigram_model.predict(test_bigram))
 print(predictions)
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
-
-
-
-
-
