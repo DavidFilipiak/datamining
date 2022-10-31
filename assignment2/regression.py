@@ -14,7 +14,7 @@ def RegressionAnalysis(X_train, y_train):
     parameters = {'C': [x / 10 for x in range(0, 100)],              
     }
     #Create grid serach to find the best C value
-    grid = GridSearchCV(estimator=model, param_grid=parameters, cv=3, refit=True) 
+    grid = GridSearchCV(estimator=model, param_grid=parameters, cv=10, refit=True) 
     grid.fit(X_train, y_train)
 
     scores_df = pd.DataFrame(grid.cv_results_)
@@ -68,7 +68,7 @@ print("Classification report: \n", classification_report(list(test_data.values[:
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 
 # Bigram Model
-vectorizer2 = CountVectorizer(analyzer="word", stop_words = "english", ngram_range=(2, 2))
+vectorizer2 = CountVectorizer(analyzer="word", stop_words = "english", ngram_range=(1, 2))
 train_bigram = vectorizer2.fit_transform(train_data.values[:, 1])
 test_bigram = vectorizer2.transform(test_data.values[:, 1])
 
