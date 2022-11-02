@@ -85,6 +85,8 @@ def load_data_in_frame(folds, scope=2):
     return df
 
 def calculate_metrics(confusion_matrix):
+    tn, fp, fn, tp = confusion_matrix.ravel()
+
     ##Acuracy
     acc = (confusion_matrix[1,1] + confusion_matrix[0,0]) / confusion_matrix.sum()
     print("Accuracy: ", acc)
@@ -96,6 +98,10 @@ def calculate_metrics(confusion_matrix):
     ## Recall
     rcall = confusion_matrix[1,1] / (confusion_matrix[1,1] + confusion_matrix[1,0])
     print("Recall: ", rcall)
+
+    ## F1 Score
+    f1 = 2 * (prc * rcall) / (prc + rcall)
+    print("F1 score: ", f1)
 
 
 if __name__ == "__main__":

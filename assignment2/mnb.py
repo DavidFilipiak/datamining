@@ -148,6 +148,21 @@ predictions = bayes.predict(test_transformed)
 show_most_informative_features(estimator.named_steps["vect"].get_feature_names_out(), bayes)
 print(classification_report(list(test_data.values[:, 0]), list(predictions)))
 print(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.calculate_metrics(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+
+
+print("\nUnigrams & Bigrams:")
+
+estimator, min_df, percentile, alpha = analyze_bayes(list(train_data.values[:, 1]), list(train_data.values[:, 0]), (1,2))
+print(f"Best min_df: {min_df}; Best chi2 percentile: {percentile}; Best alpha: {alpha}")
+test_transformed = estimator.named_steps["vect"].transform(test_data.values[:, 1])
+test_transformed = estimator.named_steps["chi"].transform(test_transformed)
+bayes = estimator.named_steps["mod"]
+predictions = bayes.predict(test_transformed)
+show_most_informative_features(estimator.named_steps["vect"].get_feature_names_out(), bayes)
+print(classification_report(list(test_data.values[:, 0]), list(predictions)))
+print(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.calculate_metrics(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 
 
 print("\nBigrams:")
@@ -161,6 +176,7 @@ predictions = bayes.predict(test_transformed)
 show_most_informative_features(estimator.named_steps["vect"].get_feature_names_out(), bayes)
 print(classification_report(list(test_data.values[:, 0]), list(predictions)))
 print(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.calculate_metrics(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 
 
 #
