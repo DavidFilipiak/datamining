@@ -11,7 +11,7 @@ def RegressionAnalysis(X_train, y_train):
     model = LogisticRegression(penalty='l1', solver='liblinear', max_iter= 100)
     # Fit model
     model.fit(X_train, y_train)
-    parameters = {'C': [x / 10 for x in range(0, 100)],              
+    parameters = {'C': [x / 10 for x in range(1, 100)],
     }
     #Create grid serach to find the best C value
     grid = GridSearchCV(estimator=model, param_grid=parameters, cv=10, refit=True) 
@@ -66,6 +66,7 @@ predictions = (unigram_model.predict(test_unigram))
 print(predictions)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.add_prediction_for_mcnemar(predictions, "regression", "unigram")
 
 # Bigram Model
 vectorizer2 = CountVectorizer(analyzer="word", stop_words = "english", ngram_range=(1, 2))
@@ -80,3 +81,4 @@ print("\nBigram Model Analysis: \n")
 predictions = bigram_model.predict(test_bigram)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.add_prediction_for_mcnemar(predictions, "regression", "bigram")

@@ -54,6 +54,7 @@ predictions = (unigram_model.predict(test_unigram))
 print(predictions)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.add_prediction_for_mcnemar(predictions, "forest", "unigram")
 
 # Bigram
 print("\nUnigram and Bigram Model Analysis: \n")
@@ -68,3 +69,4 @@ predictions = (bigram_model.predict(test_bigram))
 print(predictions)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.add_prediction_for_mcnemar(predictions, "forest", "bigram")

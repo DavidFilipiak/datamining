@@ -122,7 +122,7 @@ def analyze_bayes(X_train, y_train, ngram):
 def show_most_informative_features(feature_names, model, n=10):
     delta_log_prob = model.feature_log_prob_[1, :] - model.feature_log_prob_[0, :]
 
-    print("Class 1"+("\t"*6)+"Class 0")
+    print("Class 0"+("\t"*6)+"Class 1")
     coefs_with_fns = sorted(zip(delta_log_prob, feature_names))
     top = zip(coefs_with_fns[:n], coefs_with_fns[:-(n + 1):-1])
     for (coef_1, fn_1), (coef_2, fn_2) in top:
@@ -149,6 +149,7 @@ show_most_informative_features(estimator.named_steps["vect"].get_feature_names_o
 print(classification_report(list(test_data.values[:, 0]), list(predictions)))
 print(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 main.calculate_metrics(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.add_prediction_for_mcnemar(predictions, "mnb", "unigram")
 
 
 print("\nUnigrams & Bigrams:")
@@ -163,8 +164,9 @@ show_most_informative_features(estimator.named_steps["vect"].get_feature_names_o
 print(classification_report(list(test_data.values[:, 0]), list(predictions)))
 print(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 main.calculate_metrics(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
+main.add_prediction_for_mcnemar(predictions, "mnb", "bigram")
 
-
+'''
 print("\nBigrams:")
 
 estimator, min_df, percentile, alpha = analyze_bayes(list(train_data.values[:, 1]), list(train_data.values[:, 0]), (2,2))
@@ -177,7 +179,7 @@ show_most_informative_features(estimator.named_steps["vect"].get_feature_names_o
 print(classification_report(list(test_data.values[:, 0]), list(predictions)))
 print(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 main.calculate_metrics(confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
-
+'''
 
 #
 # CODE THAT WORKS AND IS IMPLEMENTED ENDS HERE

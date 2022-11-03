@@ -2,6 +2,7 @@ import os
 import string
 import pandas as pd
 import re
+from statsmodels.stats.contingency_tables import mcnemar
 from sklearn.feature_extraction._stop_words import ENGLISH_STOP_WORDS
 
 from nltk.tokenize import word_tokenize
@@ -102,6 +103,62 @@ def calculate_metrics(confusion_matrix):
     ## F1 Score
     f1 = 2 * (prc * rcall) / (prc + rcall)
     print("F1 score: ", f1)
+
+# pefrom McNemar statistical test on the provided models
+# predictions_a -> first model for testing
+# predictions_b -> second model for testing
+# classification -> the labels to compare the models to
+def performMcNemar(predictions_a, predictions_b, classification):
+    i = 0
+    no_no = 0
+    no_yes = 0
+    yes_no = 0
+    yes_yes = 0
+
+    while i < len(predictions_a):
+        if classification[i] == predictions_a[i] and predictions_a[i] == predictions_b[i]:
+            yes_yes += 1
+        if classification[i] != predictions_a[i] and classification[i] != predictions_b[i]:
+            no_no += 1
+        if classification[i] == predictions_a[i] and classification[i] != predictions_b[i]:
+            yes_no += 1
+        if classification[i] == predictions_b[i] and classification[i] != predictions_a[i]:
+            no_yes += 1
+        i += 1
+    ## define contingency table
+    table = [[yes_yes, yes_no],
+    		 [no_yes, no_no]]
+    print(table)
+    result = mcnemar(table, exact=True)
+    print('statistic=%.5f, p-value=%.35f' % (result.statistic, result.pvalue))
+    # interpret the p-value
+    alpha = 0.05
+    if result.pvalue > alpha:
+        print('Same proportions of errors (fail to reject H0)')
+    else:
+        print('Different proportions of errors (reject H0)')
+
+# model = accepted values: mnb, regression, ct, forest
+# type = values: unigram, bigram
+def add_prediction_for_mcnemar(predictions, model, type):
+    file = ""
+    if type == "unigram":
+        file = "unigram_predictions.txt"
+    else:
+        file = "uni_bigram_predictions.txt"
+
+    lines = []
+    with open(file, "r", encoding="utf-8") as read:
+        lines = read.readlines()
+
+    with open(file, "w", encoding="utf-8") as write:
+        for line in lines:
+            if line.startswith(model):
+                new_line = str(model) + ":" + "".join([str(x) for x in list(predictions)])
+                write.write(new_line + "\n")
+            else:
+                write.write(line)
+
 
 
 if __name__ == "__main__":
