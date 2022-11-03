@@ -8,10 +8,10 @@ from sklearn.model_selection import GridSearchCV
 
 def RegressionAnalysis(X_train, y_train):
     # Basic model without any tuned parameters
-    model = LogisticRegression(penalty='l1', solver='liblinear', max_iter= 100)
+    model = LogisticRegression(penalty='l1', solver='liblinear', max_iter= 1000)
     # Fit model
     model.fit(X_train, y_train)
-    parameters = {'C': [x / 10 for x in range(1, 100)],
+    parameters = {'C': [x / 10 for x in range(1, 101)],
     }
     #Create grid serach to find the best C value
     grid = GridSearchCV(estimator=model, param_grid=parameters, cv=10, refit=True) 
