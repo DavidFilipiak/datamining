@@ -37,6 +37,7 @@ unigram_model = tree_analysis(train_unigram, list(train_data.values[:, 0]))
 
 
 predictions = (unigram_model.predict(test_unigram))
+print('predictions:', predictions)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 main.add_prediction_for_mcnemar(predictions, "ct", "unigram")
@@ -51,6 +52,7 @@ bigram_model = tree_analysis(train_bigram, list(train_data.values[:, 0]))
 
 
 predictions_2 = (bigram_model.predict(test_bigram))
+print('predictions:', predictions_2)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions_2)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions_2)))
 main.add_prediction_for_mcnemar(predictions_2, "ct", "bigram")

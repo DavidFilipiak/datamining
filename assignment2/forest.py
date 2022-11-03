@@ -8,7 +8,6 @@ def forest_analysis(X_train, y_train):
 
     model = RandomForestClassifier(random_state=42)
     parameters = {'n_estimators': [200,400,600,800],
-                  'ccp_alpha': [0.001, 0.005, 0.01, 0.05, 0.1],
                   'criterion': ['gini', 'entropy']}
 
     grid = GridSearchCV(estimator=model, param_grid=parameters, cv=5)
@@ -38,6 +37,7 @@ unigram_model = forest_analysis(train_unigram, list(train_data.values[:, 0]))
 
 
 predictions = (unigram_model.predict(test_unigram))
+print('predictions:',predictions)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 main.add_prediction_for_mcnemar(predictions, "forest", "unigram")
@@ -51,6 +51,7 @@ test_bigram = vectorizer2.transform(test_data.values[:, 1])
 bigram_model = forest_analysis(train_bigram, list(train_data.values[:, 0]))
 
 predictions_2 = (bigram_model.predict(test_bigram))
+print('predictions:',predictions_2)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions_2)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions_2)))
 main.add_prediction_for_mcnemar(predictions_2, "forest", "bigram")
