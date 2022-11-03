@@ -8,9 +8,9 @@ def tree_analysis(X_train, y_train):
 
     model = tree.DecisionTreeClassifier()
     parameters = {'criterion': ['gini', 'entropy'],
-                  'max_depth': [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 20]}
+                  'ccp_alpha': [0.001, 0.005, 0.01, 0.05, 0.1]}
 
-    grid = GridSearchCV(estimator=model, param_grid=parameters, cv=3)
+    grid = GridSearchCV(estimator=model, param_grid=parameters, cv=5)
     grid.fit(X_train,y_train)
 
     print('Best parameters: \n', grid.best_params_)
@@ -37,13 +37,12 @@ unigram_model = tree_analysis(train_unigram, list(train_data.values[:, 0]))
 
 
 predictions = (unigram_model.predict(test_unigram))
-print(predictions)
 print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
 print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
 main.add_prediction_for_mcnemar(predictions, "ct", "unigram")
 
 # Bigram
-print("\nUnigram and Bigram Model Analysis: \n")
+print("\nUnigram + Bigram Model Analysis: \n")
 vectorizer2 = CountVectorizer(analyzer="word", stop_words = "english", ngram_range=(1, 2))
 train_bigram = vectorizer2.fit_transform(train_data.values[:, 1])
 test_bigram = vectorizer2.transform(test_data.values[:, 1])
@@ -51,11 +50,10 @@ test_bigram = vectorizer2.transform(test_data.values[:, 1])
 bigram_model = tree_analysis(train_bigram, list(train_data.values[:, 0]))
 
 
-predictions = (bigram_model.predict(test_bigram))
-print(predictions)
-print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions)))
-print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions)))
-main.add_prediction_for_mcnemar(predictions, "ct", "bigram")
+predictions_2 = (bigram_model.predict(test_bigram))
+print("Classification report: \n", classification_report(list(test_data.values[:, 0]), list(predictions_2)))
+print("Confusion Matrix: \n", confusion_matrix(list(test_data.values[:, 0]), list(predictions_2)))
+main.add_prediction_for_mcnemar(predictions_2, "ct", "bigram")
 
 
 
